@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Love + Aura Calculator</title>
+  <style>
+    :root {
+      --bg: #0d0e15;
+      --card-bg: rgba(22, 24, 38, 0.85);
+      --primary: #ff4081;
+      --primary-glow: rgba(255, 64, 129, 0.35);
+      --aura-color: #7c4dff;
+      --aura-glow: rgba(124, 77, 255, 0.35);
+      --text: #f0f3fa;
+      --text-muted: #8e95b0;
+      --border: rgba(255, 255, 255, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 20%, #201738 0%, #0d0e15 80%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px 28px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px var(--primary-glow);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ff6b9d, #c084fc, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+
+    .input-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      text-align: left;
+    }
+
+    .person-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .person-card legend {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #ff6b9d;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      background: rgba(10, 12, 20, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="text"]:focus, select:focus {
+      border-color: #ff4081;
+      box-shadow: 0 0 12px var(--primary-glow);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #ff4081, #7c4dff);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 10px 25px rgba(255, 64, 129, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(124, 77, 255, 0.5);
+    }
+
+    .btn-submit:active {
+      transform: translateY(1px);
+    }
+
+    /* Results Screen */
+    .results-card {
+      display: none;
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .couple-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #f8fafc;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    .scores-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .score-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .score-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .score-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+    }
+
+    .score-box.love .score-value {
+      color: #ff6b9d;
+    }
+
+    .score-box.aura .score-value {
+      color: #a78bfa;
+    }
+
+    .final-vibe-box {
+      background: linear-gradient(135deg, rgba(255, 64, 129, 0.15), rgba(124, 77, 255, 0.15));
+      border: 1px solid rgba(255, 64, 129, 0.3);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+
+    .final-vibe-box .score-label {
+      color: #cbd5e1;
+      font-size: 0.85rem;
+    }
+
+    .final-vibe-box .score-value {
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, #ff4081, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .duo-title {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #fbbf24;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+      padding: 8px 16px;
+      background: rgba(251, 191, 36, 0.1);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      border-radius: 30px;
+      display: inline-block;
+    }
+
+    .song-box {
+      margin-bottom: 24px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .song-box strong {
+      color: #f1f5f9;
+      font-family: monospace;
+      font-size: 1rem;
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-action {
+      background: #7c4dff;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      background: #6d39fa;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .footer {
+      margin-top: 24px;
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- INPUT FORM -->
+    <div id="calculatorForm">
+      <h1>LOVE + AURA</h1>
+      <p class="subtitle">Enter two names to calculate chemistry, aura & duo status!</p>
+
+      <form id="loveForm" class="input-section" onsubmit="calculate(event)">
+        <!-- Person 1 -->
+        <div class="person-card">
+          <legend>Person 1</legend>
+          <div class="form-group">
+            <label for="name1">Name</label>
+            <input type="text" id="name1" placeholder="e.g. Rahul" required autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="gender1">Gender</label>
+            <select id="gender1" required>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Person 2 -->
+        <div class="person-card">
+          <legend>Person 2</legend>
+          <div class="form-group">
+            <label for="name2">Name</label>
+            <input type="text" id="name2" placeholder="e.g. Anu" required autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="gender2">Gender</label>
+            <select id="gender2" required>
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">✨ CALCULATE VIBE ✨</button>
+      </form>
+    </div>
+
+    <!-- RESULTS DISPLAY -->
+    <div id="resultsCard" class="results-card">
+      <div id="coupleTitle" class="couple-title">RAHUL + ANU</div>
+
+      <div class="scores-grid">
+        <div class="score-box love">
+          <span class="score-label">Love / Chemistry</span>
+          <span id="loveScore" class="score-value">87%</span>
+        </div>
+        <div class="score-box aura">
+          <span class="score-label">Aura</span>
+          <span id="auraScore" class="score-value">91%</span>
+        </div>
+      </div>
+
+      <div class="final-vibe-box">
+        <div class="score-label">Final Vibe (60% Love + 40% Aura)</div>
+        <div id="finalScore" class="score-value">88%</div>
+      </div>
+
+      <div id="duoTitle" class="duo-title">MAIN CHARACTER DUO</div>
+
+      <div class="song-box">
+        YOUR SONG: <strong id="songName">song_80.wav</strong>
+      </div>
+
+      <div class="button-group">
+        <button id="btnPlay" class="btn-action" onclick="togglePlaySong()">
+          ▶ PLAY SONG
+        </button>
+        <button class="btn-action btn-secondary" onclick="resetForm()">
+          🔄 TRY AGAIN
+        </button>
+      </div>
+    </div>
+
+    <div class="footer">
+      Entertainment only • Not a scientific measurement of love or compatibility
+    </div>
+  </div>
+
+  <audio id="audioPlayer"></audio>
+
+  <script>
+    let currentSong = "";
+
+    function calculate(e) {
+      e.preventDefault();
+      const name1 = document.getElementById("name1").value.trim();
+      const name2 = document.getElementById("name2").value.trim();
+
+      if (!name1 || !name2) return;
+
+      // 1. Love / Chemistry Formula
+      const combined = (name1 + name2).toLowerCase();
+      let total = 0;
+      for (let i = 0; i < combined.length; i++) {
+        total += combined.charCodeAt(i) * (i + 1);
+      }
+      const love = (total % 100) + 1;
+
+      // 2. Aura Formula
+      let charSum = 0;
+      for (let i = 0; i < combined.length; i++) {
+        charSum += combined.charCodeAt(i);
+      }
+      const auraVariation = (charSum % 21) - 10;
+      let aura = love + auraVariation;
+      aura = Math.max(1, Math.min(100, aura));
+
+      // 3. Final Vibe Formula
+      const finalVibe = Math.floor((love * 0.60) + (aura * 0.40));
+
+      // 4. Funny Title
+      let title = "NPC DUO";
+      if (finalVibe >= 90) title = "LEGENDARY DUO";
+      else if (finalVibe >= 80) title = "MAIN CHARACTER DUO";
+      else if (finalVibe >= 70) title = "DANGEROUSLY COMPATIBLE";
+      else if (finalVibe >= 60) title = "INTERESTING DUO";
+      else if (finalVibe >= 40) title = "FRIENDSHIP ARC";
+
+      // 5. Song Selection
+      if (love >= 90) currentSong = "song_90.wav";
+      else if (love >= 80) currentSong = "song_80.wav";
+      else if (love >= 70) currentSong = "song_70.wav";
+      else if (love >= 60) currentSong = "song_60.wav";
+      else currentSong = "song_low.wav";
+
+      // Display results
+      document.getElementById("coupleTitle").textContent = `${name1} + ${name2}`;
+      document.getElementById("loveScore").textContent = `${love}%`;
+      document.getElementById("auraScore").textContent = `${aura}%`;
+      document.getElementById("finalScore").textContent = `${finalVibe}%`;
+      document.getElementById("duoTitle").textContent = title;
+      document.getElementById("songName").textContent = currentSong;
+
+      document.getElementById("calculatorForm").style.display = "none";
+      document.getElementById("resultsCard").style.display = "block";
+
+      // Prepare audio
+      const audio = document.getElementById("audioPlayer");
+      audio.src = currentSong;
+      audio.play().catch(err => {
+        // Autoplay may be blocked by browser until user clicks play
+        console.log("Autoplay waiting for user click:", err);
+      });
+    }
+
+    function togglePlaySong() {
+      const audio = document.getElementById("audioPlayer");
+      if (audio.paused) {
+        audio.play();
+        document.getElementById("btnPlay").textContent = "⏸ PAUSE SONG";
+      } else {
+        audio.pause();
+        document.getElementById("btnPlay").textContent = "▶ PLAY SONG";
+      }
+      audio.onended = () => {
+        document.getElementById("btnPlay").textContent = "▶ PLAY SONG";
+      };
+    }
+
+    function resetForm() {
+      const audio = document.getElementById("audioPlayer");
+      audio.pause();
+      audio.currentTime = 0;
+      document.getElementById("btnPlay").textContent = "▶ PLAY SONG";
+
+      document.getElementById("resultsCard").style.display = "none";
+      document.getElementById("calculatorForm").style.display = "block";
+    }
+  </script>
+</body>
+</html>
